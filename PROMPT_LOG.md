@@ -91,3 +91,17 @@ As per the assessment requirements, this log tracks the AI prompts used to gener
 - Refactor `BookingProvider` to fetch services from `/api/services`.
 - Update `HomeScreen` to fetch services from the provider and navigate to the detail/booking flow dynamically.
 - Fix UI typos and ensure Mongo `_id` compatibility across all mobile components.
+## Phase 7: Remote Deployment (Production-Ready)
+
+### Prompt 13: Render.com Backend Hosting
+**Intent**: Deploy the Node.js API to the web so it works across any network (Mobile/Web).
+**Prompts**: 
+- Create `REMOTE_DEPLOYMENT_GUIDE.md` with step-by-step instructions for Render + MongoDB Atlas global access.
+- Deploy `apps/api` to `https://service-booking-api-nzje.onrender.com/`.
+
+### Prompt 14: Final System Integration
+**Intent**: Reconfigure the Web Admin and Flutter apps to use the live production URL.
+**Prompts**: 
+- Refactor `apps/web/src/App.jsx` to replace `localhost:5000` with the Render URL.
+- Refactor `apps/mobile/lib/providers/` (Auth and Booking) to point to the Render API.
+- Clean up unused local networking loopback code in Flutter providers.

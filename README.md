@@ -26,6 +26,7 @@ See the README files in individual directories for detailed setup:
 
 ## 📖 Global Guides
 
+- **[FINAL_WALKTHROUGH.md](./FINAL_WALKTHROUGH.md)**: **Mandatory Review** - System overview and features.
 - **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)**: All-encompassing API & System Guide.
 - **[TESTING_GUIDE.md](./TESTING_GUIDE.md)**: Step-by-step local testing instructions.
 - **[PROMPT_LOG.md](./PROMPT_LOG.md)**: Mandatory record of AI assistance.

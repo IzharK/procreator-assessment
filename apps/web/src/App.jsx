@@ -19,7 +19,7 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const response = await axios.post('https://service-booking-api-nzje.onrender.com/api/auth/login', { email, password });
       
       if (response.data.role !== 'admin') {
         setError('Access denied: Admin credentials required.');
@@ -167,7 +167,7 @@ const CreateServiceModal = ({ isOpen, onClose, onServiceCreated }) => {
 
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.post('http://localhost:5000/api/services', {
+            const res = await axios.post('https://service-booking-api-nzje.onrender.com/api/services', {
                 name, 
                 description, 
                 duration: Number(duration), 
@@ -251,7 +251,7 @@ const Dashboard = () => {
 
         const fetchBookings = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/bookings/allbookings', {
+                const res = await axios.get('https://service-booking-api-nzje.onrender.com/api/bookings/allbookings', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setBookings(res.data);
@@ -274,7 +274,7 @@ const Dashboard = () => {
     const updateBookingStatus = async (id, newStatus) => {
         try {
             const token = localStorage.getItem('adminToken');
-            await axios.put(`http://localhost:5000/api/bookings/${id}/status`, 
+            await axios.put(`https://service-booking-api-nzje.onrender.com/api/bookings/${id}/status`, 
                 { status: newStatus },
                 { headers: { Authorization: `Bearer ${token}` }}
             );

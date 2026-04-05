@@ -15,12 +15,12 @@ The backend must be running first for the frontend and mobile apps to communicat
     MONGODB_URI=your_mongodb_atlas_uri
     JWT_SECRET=your_secret_key
     ```
+    > [!IMPORTANT]
+    > **Remote Backend Ready**: The project is now configured to use the live API at `https://service-booking-api-nzje.onrender.com/`. You no longer need to run the backend locally to test the Web or Mobile apps!
+
     > [!NOTE]
     > **What is `JWT_SECRET`?** 
     > Unlike the MongoDB URI, you don't "find" this on a dashboard. It's a secret string **you create** to sign tokens. For testing, you can use any random string like `supersecret123`, but for production, use a strong random key (e.g., `openssl rand -base64 32`).
-
-    > [!IMPORTANT]
-    > If you don't have a MongoDB Atlas URI yet, you can use a local one: `mongodb://localhost:27017/service-booking-mvp`.
 
 2.  **Initialize Server**:
     ```bash
@@ -86,14 +86,14 @@ If you'd like to test the API manually using **Postman** or **cURL**, use these 
 
 ### 1. User Signup
 ```bash
-curl -X POST http://localhost:5000/api/auth/signup \
+curl -X POST https://service-booking-api-nzje.onrender.com/api/auth/signup \
 -H "Content-Type: application/json" \
 -d '{"name": "Test User", "email": "test@example.com", "password": "password123", "role": "user"}'
 ```
 
 ### 2. User Login
 ```bash
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST https://service-booking-api-nzje.onrender.com/api/auth/login \
 -H "Content-Type: application/json" \
 -d '{"email": "test@example.com", "password": "password123"}'
 ```
@@ -101,12 +101,12 @@ curl -X POST http://localhost:5000/api/auth/login \
 
 ### 3. Fetch Services
 ```bash
-curl -X GET http://localhost:5000/api/services
+curl -X GET https://service-booking-api-nzje.onrender.com/api/services
 ```
 
 ### 4. Create a Booking (Requires Token)
 ```bash
-curl -X POST http://localhost:5000/api/bookings \
+curl -X POST https://service-booking-api-nzje.onrender.com/api/bookings \
 -H "Content-Type: application/json" \
 -H "Authorization: Bearer <YOUR_TOKEN_HERE>" \
 -d '{"service": "<SERVICE_ID_HERE>", "date": "2026-10-10T10:00:00Z"}'

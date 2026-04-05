@@ -3,8 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -20,14 +18,7 @@ class AuthProvider with ChangeNotifier {
   String? get userName => _userName;
   String? get errorMessage => _errorMessage;
 
-  // Handles Android emulator loopback vs web/ios localhost
-  String get _baseUrl {
-    String host = 'localhost';
-    if (!kIsWeb && Platform.isAndroid) {
-      host = '10.0.2.2';
-    }
-    return 'http://$host:5000/api/auth';
-  }
+  final String _baseUrl = 'https://service-booking-api-nzje.onrender.com/api/auth';
 
   Future<bool> login(String email, String password) async {
     _isLoading = true;
