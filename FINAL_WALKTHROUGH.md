@@ -39,9 +39,10 @@ We implemented a modern **Monorepo** structure for clean development and deploym
 The project has transitioned from a local-only setup to a **global system**:
 
 -   **Backend**: Live at `https://service-booking-api-nzje.onrender.com/`.
+-   **Web Admin**: Live at `https://service-booking-admin.netlify.app/`.
 -   **Connectivity**: 
-    -   The **Web Admin** now points to the production URL.
-    -   The **Mobile App** now points to the production URL (removing the need for Android loopback proxies like `10.0.2.2`).
+    -   The **Web Admin** (Netlify) now points to the production API (Render).
+    -   The **Mobile App** now points to the production API (removing the need for Android loopback proxies like `10.0.2.2`).
 -   **Setup**: No local server is required to test the frontend or mobile modules.
 
 ---
