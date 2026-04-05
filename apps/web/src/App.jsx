@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, LogIn, PlusCircle, Calendar, Settings, LogOut, ChevronDown, X } from 'lucide-react';
+import { LayoutDashboard, LogIn, PlusCircle, Calendar, Settings as SettingsIcon, LogOut, ChevronDown, X, User, MapPin, Shield } from 'lucide-react';
 import axios from 'axios';
 
 // -------------------------------------------------------------
@@ -129,7 +129,7 @@ const StatusDropdown = ({ currentStatus, bookingId, onUpdate }) => {
             </button>
             
             {isOpen && (
-                <div className="absolute z-10 mt-1 w-36 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute z-50 left-0 mt-1 w-36 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                     {statuses.map(s => (
                         <button
                             key={s}
@@ -142,7 +142,7 @@ const StatusDropdown = ({ currentStatus, bookingId, onUpdate }) => {
                 </div>
             )}
             {/* Backdrop to close click outside */}
-            {isOpen && <div className="fixed inset-0 z-0" onClick={() => setIsOpen(false)} />}
+            {isOpen && <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />}
         </div>
     );
 };
@@ -232,6 +232,77 @@ const CreateServiceModal = ({ isOpen, onClose, onServiceCreated }) => {
 };
 
 // -------------------------------------------------------------
+// Settings Component
+// -------------------------------------------------------------
+const SettingsView = () => {
+    const adminData = JSON.parse(localStorage.getItem('adminUser') || '{}');
+    
+    return (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <header className="mb-12">
+                <h1 className="text-4xl font-black tracking-tight mb-2">Account Settings</h1>
+                <p className="text-slate-400 text-lg">Manage your administrative profile and security preferences.</p>
+            </header>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-8">
+                    <div className="glass border border-slate-700/50 rounded-2xl p-8">
+                        <h2 className="text-xl font-bold mb-6 flex items-center">
+                            <User className="mr-3 text-blue-400" size={24} />
+                            Profile Information
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2">Display Name</label>
+                                <div className="bg-slate-800/50 border border-slate-700 p-4 rounded-xl text-white font-medium">
+                                    {adminData.name || 'Admin User'}
+                                </div>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-2">Email Address</label>
+                                <div className="bg-slate-800/50 border border-slate-700 p-4 rounded-xl text-white font-medium">
+                                    {adminData.email || 'admin@procreator.ai'}
+                                </div>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1">Access Role</label>
+                                <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-black uppercase tracking-tighter">
+                                    {adminData.role || 'Super Admin'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="glass border border-slate-700/50 rounded-2xl p-8 opacity-60">
+                        <h2 className="text-xl font-bold mb-6 flex items-center">
+                            <Shield className="mr-3 text-emerald-400" size={24} />
+                            Security & Credentials
+                        </h2>
+                        <p className="text-slate-400 mb-6">Password changes and Two-Factor Authentication are currently managed by the root system administrator.</p>
+                        <button disabled className="px-6 py-3 bg-slate-800 text-slate-500 rounded-xl font-bold text-sm cursor-not-allowed">
+                            Change Master Password
+                        </button>
+                    </div>
+                </div>
+
+                <div className="space-y-8">
+                    <div className="glass border border-slate-700/50 rounded-2xl p-8 bg-gradient-to-br from-blue-600/10 to-transparent">
+                        <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center mb-6 shadow-lg shadow-blue-500/20">
+                            <MapPin className="text-white" size={32} />
+                        </div>
+                        <h3 className="text-lg font-bold mb-2">Platform Region</h3>
+                        <p className="text-slate-400 text-sm mb-4">You are currently accessing the Global administrative nodes via Render.com</p>
+                        <div className="text-xs font-mono text-blue-400 bg-blue-400/10 p-2 rounded-lg">
+                            Node: US-EAST-1 (Live)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// -------------------------------------------------------------
 // Dashboard Component
 // -------------------------------------------------------------
 const Dashboard = () => {
@@ -240,6 +311,7 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('bookings'); // 'bookings' or 'settings'
 
     // Basic Auth Guard & Fetching
     useEffect(() => {
@@ -262,8 +334,12 @@ const Dashboard = () => {
             }
         };
 
-        fetchBookings();
-    }, [navigate]);
+        if (activeTab === 'bookings') {
+            fetchBookings();
+        } else {
+            setLoading(false);
+        }
+    }, [navigate, activeTab]);
 
     const handleLogout = () => {
         localStorage.removeItem('adminToken');
@@ -287,8 +363,6 @@ const Dashboard = () => {
     };
 
     const handleServiceCreated = (newService) => {
-        // We could also refetch services if we had a dedicated service page,
-        // but for now, we just show a success alert to confirm it worked.
         alert(`Service "${newService.name}" created successfully!`);
     };
 
@@ -296,7 +370,7 @@ const Dashboard = () => {
     const pendingBookings = bookings.filter(b => b.status === 'pending').length;
 
     return (
-        <div className="min-h-screen bg-[#0f172a] text-white flex font-sans">
+        <div className="min-h-screen bg-[#0f172a] text-white flex font-sans overflow-hidden">
             <CreateServiceModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)} 
@@ -304,14 +378,17 @@ const Dashboard = () => {
             />
 
             {/* Sidebar */}
-            <div className="w-64 glass border-r border-slate-800 flex flex-col p-6 space-y-8 z-10">
+            <div className="w-64 glass border-r border-slate-800 flex flex-col p-6 space-y-8 z-20">
                 <div className="flex items-center space-x-3 text-blue-400 pl-2">
                     <LayoutDashboard size={26} strokeWidth={2.5} />
                     <span className="text-2xl font-black tracking-tight text-white drop-shadow-md">AdminPanel</span>
                 </div>
                 
                 <nav className="flex-1 space-y-3 mt-4">
-                    <button className="w-full flex items-center space-x-4 px-5 py-3.5 rounded-xl bg-blue-600/15 text-blue-400 font-semibold transition-all">
+                    <button 
+                        onClick={() => setActiveTab('bookings')}
+                        className={`w-full flex items-center space-x-4 px-5 py-3.5 rounded-xl font-semibold transition-all ${activeTab === 'bookings' ? 'bg-blue-600/15 text-blue-400' : 'text-slate-400 hover:bg-slate-800/80 hover:text-white'}`}
+                    >
                         <Calendar size={22} />
                         <span>Bookings</span>
                     </button>
@@ -322,8 +399,11 @@ const Dashboard = () => {
                         <PlusCircle size={22} className="group-hover:text-emerald-400 transition-colors" />
                         <span>Create Service</span>
                     </button>
-                    <button className="w-full flex items-center space-x-4 px-5 py-3.5 rounded-xl text-slate-400 hover:bg-slate-800/80 hover:text-white font-semibold transition-all">
-                        <Settings size={22} />
+                    <button 
+                        onClick={() => setActiveTab('settings')}
+                        className={`w-full flex items-center space-x-4 px-5 py-3.5 rounded-xl font-semibold transition-all ${activeTab === 'settings' ? 'bg-blue-600/15 text-blue-400' : 'text-slate-400 hover:bg-slate-800/80 hover:text-white'}`}
+                    >
+                        <SettingsIcon size={22} />
                         <span>Settings</span>
                     </button>
                 </nav>
@@ -344,98 +424,106 @@ const Dashboard = () => {
                 {/* Decorative background blur */}
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
-                <header className="flex justify-between items-end mb-12">
-                    <div>
-                        <h1 className="text-4xl font-black tracking-tight mb-2">Booking Dashboard</h1>
-                        <p className="text-slate-400 text-lg">Manage your business schedule and client appointments.</p>
-                    </div>
-                    <div className="flex space-x-5">
-                        <div className="glass px-7 py-4 rounded-2xl border border-slate-700/50 min-w-[160px]">
-                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Total Bookings</p>
-                            <p className="text-3xl font-black text-white">{loading ? '-' : totalBookings}</p>
-                        </div>
-                        <div className="glass px-7 py-4 rounded-2xl border border-slate-700/50 border-t-4 border-t-orange-500 min-w-[160px]">
-                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Pending Action</p>
-                            <p className="text-3xl font-black text-white">{loading ? '-' : pendingBookings}</p>
-                        </div>
-                    </div>
-                </header>
+                {activeTab === 'settings' ? (
+                    <SettingsView />
+                ) : (
+                    <>
+                        <header className="flex justify-between items-end mb-12 animate-in fade-in slide-in-from-top-4 duration-500">
+                            <div>
+                                <h1 className="text-4xl font-black tracking-tight mb-2">Booking Dashboard</h1>
+                                <p className="text-slate-400 text-lg">Manage your business schedule and client appointments.</p>
+                            </div>
+                            <div className="flex space-x-5">
+                                <div className="glass px-7 py-4 rounded-2xl border border-slate-700/50 min-w-[160px]">
+                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Total Bookings</p>
+                                    <p className="text-3xl font-black text-white">{loading ? '-' : totalBookings}</p>
+                                </div>
+                                <div className="glass px-7 py-4 rounded-2xl border border-slate-700/50 border-t-4 border-t-orange-500 min-w-[160px]">
+                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Pending Action</p>
+                                    <p className="text-3xl font-black text-white">{loading ? '-' : pendingBookings}</p>
+                                </div>
+                            </div>
+                        </header>
 
-                <div className="glass border border-slate-700/50 rounded-2xl overflow-hidden shadow-2xl">
-                    <div className="p-6 border-b border-slate-800/80 bg-slate-800/20">
-                        <h2 className="text-xl font-bold">Recent Appointments</h2>
-                    </div>
+                        <div className="glass border border-slate-700/50 rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-500">
+                            <div className="p-6 border-b border-slate-800/80 bg-slate-800/20 rounded-t-2xl">
+                                <h2 className="text-xl font-bold">Recent Appointments</h2>
+                            </div>
 
-                    {loading ? (
-                        <div className="p-16 text-center text-slate-400 flex flex-col items-center">
-                            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
-                            <p className="font-medium tracking-wide">Loading bookings framework...</p>
-                        </div>
-                    ) : error ? (
-                        <div className="p-10 text-center text-red-400 bg-red-500/5">
-                            <p>{error}</p>
-                        </div>
-                    ) : bookings.length === 0 ? (
-                        <div className="p-20 text-center">
-                            <Calendar size={64} className="mx-auto text-slate-600 mb-6" />
-                            <h3 className="text-2xl font-bold text-slate-300 mb-2">No Bookings Yet</h3>
-                            <p className="text-slate-500 max-w-sm mx-auto">When customers book services through the mobile app, they will appear right here.</p>
-                        </div>
-                    ) : (
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                                <thead className="bg-slate-900/40 text-slate-400 text-xs font-bold uppercase tracking-wider">
-                                    <tr>
-                                        <th className="px-8 py-5">Customer Info</th>
-                                        <th className="px-6 py-5">Requested Service</th>
-                                        <th className="px-6 py-5">Date & Time</th>
-                                        <th className="px-6 py-5">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-800/50">
-                                    {bookings.map((b) => {
-                                        const dateObj = new Date(b.date);
-                                        const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                                        const formattedTime = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                            <div className="relative">
+                                {loading ? (
+                                    <div className="p-16 text-center text-slate-400 flex flex-col items-center">
+                                        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
+                                        <p className="font-medium tracking-wide">Loading bookings framework...</p>
+                                    </div>
+                                ) : error ? (
+                                    <div className="p-10 text-center text-red-400 bg-red-500/5">
+                                        <p>{error}</p>
+                                    </div>
+                                ) : bookings.length === 0 ? (
+                                    <div className="p-20 text-center">
+                                        <Calendar size={64} className="mx-auto text-slate-600 mb-6" />
+                                        <h3 className="text-2xl font-bold text-slate-300 mb-2">No Bookings Yet</h3>
+                                        <p className="text-slate-500 max-w-sm mx-auto">When customers book services through the mobile app, they will appear right here.</p>
+                                    </div>
+                                ) : (
+                                    <div className="overflow-visible">
+                                        <table className="w-full text-left border-collapse">
+                                            <thead className="bg-slate-900/40 text-slate-400 text-xs font-bold uppercase tracking-wider">
+                                                <tr>
+                                                    <th className="px-8 py-5">Customer Info</th>
+                                                    <th className="px-6 py-5">Requested Service</th>
+                                                    <th className="px-6 py-5">Date & Time</th>
+                                                    <th className="px-6 py-5">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-800/50">
+                                                {bookings.map((b) => {
+                                                    const dateObj = new Date(b.date);
+                                                    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                                                    const formattedTime = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-                                        return (
-                                            <tr key={b._id} className="hover:bg-slate-800/30 transition-colors group">
-                                                <td className="px-8 py-5">
-                                                    <div className="flex items-center space-x-4">
-                                                        <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-lg">
-                                                            {b.user?.name?.charAt(0).toUpperCase() || '?'}
-                                                        </div>
-                                                        <div>
-                                                            <p className="font-bold text-slate-200 group-hover:text-white transition-colors">{b.user?.name || 'Unknown User'}</p>
-                                                            <p className="text-xs text-slate-500 font-medium">{b.user?.email || 'N/A'}</p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-5">
-                                                    <p className="font-semibold text-slate-300">{b.service?.name || 'Deleted Service'}</p>
-                                                    {b.service && <p className="text-xs text-slate-500 font-medium">${b.service.price} • {b.service.duration} min</p>}
-                                                </td>
-                                                <td className="px-6 py-5">
-                                                    <p className="font-semibold text-slate-300">{formattedDate}</p>
-                                                    <p className="text-xs text-slate-500 font-medium">{formattedTime}</p>
-                                                </td>
-                                                <td className="px-6 py-5 pr-8">
-                                                    <div className="flex relative z-0">
-                                                       <StatusDropdown 
-                                                          currentStatus={b.status} 
-                                                          bookingId={b._id}
-                                                          onUpdate={updateBookingStatus} 
-                                                       />
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
+                                                    return (
+                                                        <tr key={b._id} className="hover:bg-slate-800/30 transition-colors group">
+                                                            <td className="px-8 py-5">
+                                                                <div className="flex items-center space-x-4">
+                                                                    <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-lg">
+                                                                        {b.user?.name?.charAt(0).toUpperCase() || '?'}
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="font-bold text-slate-200 group-hover:text-white transition-colors">{b.user?.name || 'Unknown User'}</p>
+                                                                        <p className="text-xs text-slate-500 font-medium">{b.user?.email || 'N/A'}</p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-5">
+                                                                <p className="font-semibold text-slate-300">{b.service?.name || 'Deleted Service'}</p>
+                                                                {b.service && <p className="text-xs text-slate-500 font-medium">${b.service.price} • {b.service.duration} min</p>}
+                                                            </td>
+                                                            <td className="px-6 py-5">
+                                                                <p className="font-semibold text-slate-300">{formattedDate}</p>
+                                                                <p className="text-xs text-slate-500 font-medium">{formattedTime}</p>
+                                                            </td>
+                                                            <td className="px-6 py-5 pr-8">
+                                                                <div className="flex relative">
+                                                                   <StatusDropdown 
+                                                                      currentStatus={b.status} 
+                                                                      bookingId={b._id}
+                                                                      onUpdate={updateBookingStatus} 
+                                                                   />
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    )}
-                </div>
+                    </>
+                )}
             </div>
         </div>
     );
