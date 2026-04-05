@@ -105,3 +105,10 @@ As per the assessment requirements, this log tracks the AI prompts used to gener
 - Refactor `apps/web/src/App.jsx` to replace `localhost:5000` with the Render URL.
 - Refactor `apps/mobile/lib/providers/` (Auth and Booking) to point to the Render API.
 - Clean up unused local networking loopback code in Flutter providers.
+
+### Prompt 15: Netlify Frontend Hosting
+**Intent**: Deploy the React Web Admin to a public URL using Netlify.
+**Prompts**: 
+- Create `WEB_DEPLOYMENT_GUIDE.md` for Netlify monorepo deployment.
+- Configure `apps/web` with build command `npm run build` and publish directory `dist`.
+- Deploy to `https://service-booking-admin.netlify.app/`.

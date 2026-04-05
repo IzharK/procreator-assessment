@@ -11,7 +11,7 @@ This repository contains an end-to-end MVP (Minimum Viable Product) for a Servic
 ## Overall Architecture
 
 - **Backend**: RESTful API for auth, service management, and booking logic.
-- **Frontend Admin**: Management dashboard for admins to manage services and view all bookings.
+- **Frontend Admin**: Management dashboard live at [service-booking-admin.netlify.app](https://service-booking-admin.netlify.app/).
 - **Mobile Client**: Consumer-facing app for users to discover services and schedule appointments.
 - **Persistence**: MongoDB Atlas for robust remote data storage.
 
@@ -43,4 +43,4 @@ See the README files in individual directories for detailed setup:
 - **Monorepo**: Centralized codebase with clear separation of concerns.
 - **State Management**: Provider (Flutter) for consumer app.
 - **Auth**: Token-based authentication (JWT).
-- **Deployment**: Render/Vercel (Backend/Web) and Build-ready APK (Android).
+- **Deployment**: Render/Netlify (Backend/Web) and Build-ready APK (Android).
