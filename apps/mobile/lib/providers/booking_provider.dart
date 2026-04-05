@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class BookingProvider with ChangeNotifier {
   List<dynamic> _services = [];
@@ -13,13 +11,7 @@ class BookingProvider with ChangeNotifier {
   List<dynamic> get bookings => _bookings;
   bool get isLoading => _isLoading;
 
-  String get _baseUrl {
-    String host = 'localhost';
-    if (!kIsWeb && Platform.isAndroid) {
-      host = '10.0.2.2';
-    }
-    return 'http://$host:5000/api';
-  }
+  final String _baseUrl = 'https://service-booking-api-nzje.onrender.com/api';
 
   Future<void> fetchServices() async {
     _isLoading = true;

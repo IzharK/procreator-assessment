@@ -8,7 +8,7 @@ This guide provides detailed instructions on how to interact with the **Service 
 
 The API uses **JWT (JSON Web Tokens)** for security and role-based access control.
 
--   **Base URL**: `http://localhost:5000/api`
+-   **Base URL**: `https://service-booking-api-nzje.onrender.com/api`
 -   **Header**: `Authorization: Bearer <YOUR_TOKEN_HERE>`
 -   **Roles**:
     -   `user`: Can browse services and manage their own bookings.
